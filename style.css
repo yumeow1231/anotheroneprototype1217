@@ -281,7 +281,7 @@ h2 {
 
 /* ⑤ Confirm 按钮：224×46，圆角 50，绝对居中 */
 .btn-confirm {
-  width: 224px;
+  width: 180px;
   height: 46px;
 
   margin: 20px auto 40px;
@@ -350,20 +350,21 @@ h2 {
 
 /* Clear 按钮（主界面） */
 .btn-clear {
-  width: 80%;
-  margin: 30px auto 0 auto;
-  display: block;
+  width: 180px;
+  height: 46px;
 
-  background: #ffeaa7;
-  color: #000;
-  font-family: 'Black Han Sans', sans-serif;
-  font-size: 28px;
-  padding: 18px 0;
+  margin: 20px auto 40px;
 
+  background: #FFEFB0;
   border: none;
-  border-radius: 40px;
+  border-radius: 50px;
 
-  text-align: center;
+  font-size: 20px;
+  font-weight: 900;
   cursor: pointer;
-  box-shadow: 0px 4px 0px #d2c089;
+
+  display: block;
+  text-align: center;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }

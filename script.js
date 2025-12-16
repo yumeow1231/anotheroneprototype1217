@@ -160,20 +160,41 @@ photoArea.addEventListener('click', (e) => {
   photoInput.click();
 });
 
-// 处理图片上传
-photoInput.addEventListener('change', () => {
-  const file = photoInput.files[0];
+// 处理图片上传（兼容手机）
+photoInput.addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
   if (!file) return;
+
   const reader = new FileReader();
-  reader.onload = (e) => {
-    items[currentIndex].imageData = e.target.result;
+
+  reader.onload = () => {
+    const dataUrl = reader.result;
+
+    // 1. 存到当前物品
+    items[currentIndex].imageData = dataUrl;
     saveItems();
-    photoPreview.src = e.target.result;
+
+    // 2. 更新当前物品页预览
+    photoPreview.src = dataUrl;
     photoPreview.style.display = 'block';
     photoPlaceholder.style.display = 'none';
+
+    // 3. 刷新主页面拼图（如果你之前有这个函数的话）
+    if (typeof buildMainPage === 'function') {
+      buildMainPage();
+    }
   };
+
+  reader.onerror = () => {
+    alert('图片读取失败了，可以再试一次，或者换一张图片试试。');
+  };
+
   reader.readAsDataURL(file);
+
+  // ⭐ 关键：清空 input 的值，避免手机上两次选同一张图不触发 change
+  e.target.value = '';
 });
+
 
 // 编辑价格
 priceDisplay.addEventListener('click', () => {
