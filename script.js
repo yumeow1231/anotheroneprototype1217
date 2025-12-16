@@ -160,38 +160,33 @@ photoArea.addEventListener('click', (e) => {
   photoInput.click();
 });
 
-// 处理图片上传（兼容手机）
+// 处理图片上传（电脑 + 手机都稳）
 photoInput.addEventListener('change', (e) => {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
 
+  /* ① 先用 objectURL 显示（不占 localStorage） */
+  const objectUrl = URL.createObjectURL(file);
+  photoPreview.src = objectUrl;
+  photoPreview.style.display = 'block';
+  photoPlaceholder.style.display = 'none';
+
+  /* ② 再尝试转 base64 并保存（失败也不影响显示） */
   const reader = new FileReader();
-
   reader.onload = () => {
-    const dataUrl = reader.result;
-
-    // 1. 存到当前物品
-    items[currentIndex].imageData = dataUrl;
-    saveItems();
-
-    // 2. 更新当前物品页预览
-    photoPreview.src = dataUrl;
-    photoPreview.style.display = 'block';
-    photoPlaceholder.style.display = 'none';
-
-    // 3. 刷新主页面拼图（如果你之前有这个函数的话）
-    if (typeof buildMainPage === 'function') {
-      buildMainPage();
+    try {
+      items[currentIndex].imageData = reader.result;
+      saveItems(); // 手机可能失败，但不会影响预览
+    } catch (err) {
+      console.warn('localStorage 保存失败（手机常见）', err);
     }
   };
-
   reader.onerror = () => {
-    alert('图片读取失败了，可以再试一次，或者换一张图片试试。');
+    alert('图片读取失败，可以换一张再试');
   };
-
   reader.readAsDataURL(file);
 
-  // ⭐ 关键：清空 input 的值，避免手机上两次选同一张图不触发 change
+  /* ③ 关键：清空 input，防止手机重复选同一张不触发 change */
   e.target.value = '';
 });
 
