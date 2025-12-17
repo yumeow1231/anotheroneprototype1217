@@ -228,7 +228,7 @@ function handleInitialView() {
     const n = parseInt(raw, 10);
 
     if (!isNaN(n)) {
-      // 允许 0–8 或 1–9
+      // 允许 0-8 或 1-9
       const idx = (n >= 1 && n <= 9) ? (n - 1) : n;
 
       if (idx >= 0 && idx < items.length) {
@@ -238,11 +238,12 @@ function handleInitialView() {
     }
   }
 
-  // 👇 默认显示主页面（一定要在函数里面）
+  // ✅ 默认显示主页面（必须在函数里面）
   buildMainPage();
   mainPage.style.display = 'block';
   itemPage.style.display = 'none';
 }
+
 
 
 
