@@ -178,11 +178,40 @@ photoInput.addEventListener('change', (e) => {
   const reader = new FileReader();
 
   reader.onload = () => {
-    const dataUrl = reader.result;
+    const original = reader.result;
 
-    // 1. 存到当前物品
-    items[currentIndex].imageData = dataUrl;
-    saveOneItemSafe(currentIndex, { imageData: dataUrl });
+// 1.存到当前物品
+const imgEl = new Image();
+imgEl.onload = () => {
+  const maxW = 900; // 你也可以改 600/700，更省空间
+  const scale = Math.min(1, maxW / imgEl.width);
+  const w = Math.round(imgEl.width * scale);
+  const h = Math.round(imgEl.height * scale);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  ctx.drawImage(imgEl, 0, 0, w, h);
+
+  // 关键：用 jpeg + 质量系数，体积会小很多
+  const compressed = canvas.toDataURL('image/jpeg', 0.75);
+
+  items[currentIndex].imageData = compressed;
+  saveOneItemSafe(currentIndex, { imageData: compressed });
+  items = loadItems();
+
+
+  photoPreview.src = compressed;
+  photoPreview.style.display = 'block';
+  photoPlaceholder.style.display = 'none';
+
+  buildMainPage();
+};
+imgEl.src = original;
+
 
     // 2. 更新当前物品页预览
     photoPreview.src = dataUrl;
