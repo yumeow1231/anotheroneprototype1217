@@ -25,10 +25,19 @@ function loadItems() {
   return defaultItems;
 }
 
-// 写本地存储
+// 写整个 items（保留，用于 clear 等）
 function saveItems() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
+
+// ✅ 安全地只保存一个 item（关键）
+function saveOneItemSafe(index, patch) {
+  const latest = loadItems(); // 永远从本地拿最新的 9 个
+  latest[index] = { ...latest[index], ...patch }; // 只改当前这个
+  items = latest; // 同步回内存
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(latest));
+}
+
 
 // ----- DOM refs -----
 const mainPage = document.getElementById('main-page');
@@ -150,7 +159,8 @@ itemTitle.addEventListener('click', () => {
   if (newName !== null && newName.trim() !== '') {
     item.name = newName.trim();
     itemTitle.textContent = item.name;
-    saveItems();
+    saveOneItemSafe(currentIndex, { name: item.name });
+
   }
 });
 
@@ -172,7 +182,7 @@ photoInput.addEventListener('change', (e) => {
 
     // 1. 存到当前物品
     items[currentIndex].imageData = dataUrl;
-    saveItems();
+    saveOneItemSafe(currentIndex, { imageData: dataUrl });
 
     // 2. 更新当前物品页预览
     photoPreview.src = dataUrl;
@@ -208,7 +218,8 @@ priceDisplay.addEventListener('click', () => {
   } else {
     item.price = trimmed; // 需要严格数字校验的话可以再加
   }
-  saveItems();
+  saveOneItemSafe(currentIndex, { price: item.price });
+
   priceDisplay.textContent = item.price ? '€ ' + item.price : '€ ???';
 });
 
