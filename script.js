@@ -217,27 +217,34 @@ btnConfirm.addEventListener('click', () => {
   backToMain();
 });
 
-// ----- URL 参数（配合 NFC 使用） -----
+// ---- URL 参数（配合 NFC 使用） ----
 function handleInitialView() {
   const params = new URLSearchParams(window.location.search);
-  const itemParam = params.get('item');
 
-  if (itemParam != null) {
-    const idx = parseInt(itemParam, 10);
-    if (!isNaN(idx) && idx >= 0 && idx < items.length) {
-      // 先显示对应物品页
-      openItemPage(idx);
-      return;
+  // 支持 item / id / o 三种参数
+  const raw = params.get('item') ?? params.get('id') ?? params.get('o');
+
+  if (raw != null) {
+    const n = parseInt(raw, 10);
+
+    if (!isNaN(n)) {
+      // 允许 0–8 或 1–9
+      const idx = (n >= 1 && n <= 9) ? (n - 1) : n;
+
+      if (idx >= 0 && idx < items.length) {
+        openItemPage(idx);
+        return;
+      }
     }
   }
 
-
-
-  // 默认显示主页面
+  // 👇 默认显示主页面（一定要在函数里面）
   buildMainPage();
   mainPage.style.display = 'block';
   itemPage.style.display = 'none';
 }
+
+
 
 // 初始化
 handleInitialView();

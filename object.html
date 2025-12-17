@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Open Object</title>
+</head>
+<body>
+  <script>
+    const p = new URLSearchParams(location.search);
+
+    // 支持多种写法：?item=3  ?id=3  ?o=3  甚至 ?3
+    let raw =
+      p.get('item') ??
+      p.get('id') ??
+      p.get('o') ??
+      (location.search.startsWith('?') ? location.search.slice(1) : '1');
+
+    let n = parseInt(raw, 10);
+    if (isNaN(n)) n = 1;
+
+    // 允许 0-8 或 1-9
+    let idx = (n >= 1 && n <= 9) ? (n - 1) : n; // 1-9 -> 0-8, 0-8 -> 0-8
+    if (idx < 0) idx = 0;
+    if (idx > 8) idx = 8;
+
+    // 统一跳回 index.html?item=idx
+    location.replace(`./index.html?item=${idx}`);
+  </script>
+</body>
+</html>
